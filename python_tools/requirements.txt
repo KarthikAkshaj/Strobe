@@ -1,0 +1,23 @@
+# Semantic Sentinel - Python Development Dependencies
+# Phase 1: Prototype & Asset Preparation
+
+# Deep Learning Framework
+torch>=2.0.0
+torchvision>=0.15.0
+
+# OpenAI CLIP
+git+https://github.com/openai/CLIP.git
+
+# ONNX Export & Runtime
+onnx>=1.14.0
+onnxruntime>=1.15.0
+
+# Image/Video Processing
+opencv-python>=4.8.0
+Pillow>=10.0.0
+
+# Numerical Computing
+numpy>=1.24.0
+
+# Utilities
+tqdm>=4.65.0

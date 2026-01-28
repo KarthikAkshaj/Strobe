@@ -1,0 +1,25 @@
+# Python virtual environments
+.venv/
+venv/
+
+# JSON files (generated artifacts, not source-of-truth)
+*.json
+
+# TODO / scratch / planning files
+todo
+todo.txt
+TODO*
+
+# Code dump files
+*_dump.txt
+*_tools.sh
+
+# Python cache / build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
