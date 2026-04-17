@@ -1,0 +1,86 @@
+# Semantic Sentinel Caption Bank v2
+# Three-tier taxonomy: Scene Descriptions, Activity/Events, Meta/Abstention
+# One caption per line. Lines starting with # are comments.
+
+# === TIER 1: SCENE DESCRIPTIONS ===
+
+# Nature & Landscape
+a mountain landscape
+a mountain landscape with clouds
+a river or lake surrounded by trees
+an ocean or sea view
+a green forest
+a field or meadow
+a waterfall
+a desert landscape
+a sunset or sunrise sky
+
+# Urban & Architecture
+a city skyline with tall buildings
+a city street with buildings and cars
+a suburban neighborhood
+a bridge over water
+a highway or freeway
+
+# Indoor Spaces
+an empty room
+a living room with furniture
+a kitchen
+an office or workspace
+a bedroom
+a restaurant or dining area
+a store or shop interior
+
+# Vehicles & Transport
+a car driving on a road
+a car parked
+traffic on a road
+a train or subway
+a boat on water
+an airplane in the sky
+
+# Objects & Still Life
+a computer screen or monitor
+food on a plate or table
+a book or document
+flowers or plants
+
+# === TIER 2: ACTIVITY/EVENT DESCRIPTIONS ===
+
+# Human Actions
+a person walking
+a person running
+a group of people talking
+a person sitting at a desk
+a person cooking or preparing food
+a person using a phone or device
+people dancing or celebrating
+a large crowd gathered outdoors
+
+# Animal Activity
+a dog running or playing
+a bird flying
+an animal in nature
+
+# Environmental Events
+rain falling
+snow falling
+fog or mist
+wind blowing through trees
+waves crashing on shore
+
+# === TIER 3: META/ABSTENTION CAPTIONS ===
+
+# Visual Quality States
+a dark or underexposed scene
+a bright overexposed scene
+a blurry or out of focus image
+motion blur from fast movement
+
+# Unrecognizable Content
+an unclear or abstract image
+
+# Transition States
+a scene transition or cut
+a fade to black
+a rapid sequence of images

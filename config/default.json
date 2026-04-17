@@ -1,0 +1,21 @@
+{
+  "model": {
+    "name": "ViT-B/32",
+    "onnx_path": "models/clip_visual_vit_b32.onnx",
+    "embedding_dim": 512,
+    "input_size": 224
+  },
+  "caption_bank_path": "models/caption_bank.json",
+  "pipeline": {
+    "target_fps": 1.0,
+    "change_threshold": 0.85,
+    "hysteresis_count": 2,
+    "caption_threshold": 0.20,
+    "top_k": 3,
+    "stability_delta": 0.02
+  },
+  "preprocessing": {
+    "mean": [0.48145466, 0.4578275, 0.40821073],
+    "std": [0.26862954, 0.26130258, 0.27577711]
+  }
+}

@@ -92,13 +92,17 @@ class AnchorChangeDetector:
 
         # Validate input shape
         if embedding.shape != (self.embedding_dim,):
-            raise ValueError(f"Expected shape ({self.embedding_dim},), got {embedding.shape}")
+            raise ValueError(
+                f"Expected shape ({self.embedding_dim},), got {embedding.shape}"
+            )
 
         # Validate embedding is approximately unit-normalized (defensive check)
         norm = np.linalg.norm(embedding)
         if not (0.9 <= norm <= 1.1):
-            raise ValueError(f"Embedding norm {norm:.4f} outside valid range [0.9, 1.1]. "
-                             "CLIP embeddings should be unit-normalized.")
+            raise ValueError(
+                f"Embedding norm {norm:.4f} outside valid range [0.9, 1.1]. "
+                "CLIP embeddings should be unit-normalized."
+            )
 
         # First frame: set as anchor, no trigger
         if self.anchor is None:

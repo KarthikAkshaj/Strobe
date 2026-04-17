@@ -12,7 +12,7 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 import torch
@@ -21,6 +21,7 @@ import clip
 # Constants
 MODEL_NAME = "ViT-B/32"
 EMBEDDING_DIM = 512
+REDUNDANCY_THRESHOLD = 0.90
 
 # Default test captions covering diverse semantic content
 DEFAULT_CAPTIONS = [
@@ -120,10 +121,87 @@ def create_caption_bank(captions: List[str], embeddings: np.ndarray) -> dict:
 
 
 def load_captions_from_file(filepath: Path) -> List[str]:
-    """Load captions from a text file (one caption per line)."""
+    """Load captions from a text file (one per line, # comments ignored)."""
     with open(filepath, "r", encoding="utf-8") as f:
-        captions = [line.strip() for line in f if line.strip()]
+        captions = [
+            line.strip() for line in f
+            if line.strip() and not line.strip().startswith("#")
+        ]
     return captions
+
+
+def validate_redundancy(
+    captions: List[str], embeddings: np.ndarray, threshold: float = REDUNDANCY_THRESHOLD
+) -> List[Tuple[int, int, str, str, float]]:
+    """
+    Check all caption pairs for semantic redundancy.
+
+    Returns list of (idx_a, idx_b, caption_a, caption_b, similarity)
+    for pairs exceeding the threshold.
+    """
+    n = len(captions)
+    # Embeddings are already L2-normalized, so dot product = cosine similarity
+    sim_matrix = embeddings @ embeddings.T
+    redundant = []
+    for i in range(n):
+        for j in range(i + 1, n):
+            if sim_matrix[i, j] > threshold:
+                redundant.append((i, j, captions[i], captions[j], float(sim_matrix[i, j])))
+    return redundant
+
+
+def print_validation_report(
+    captions: List[str], embeddings: np.ndarray, threshold: float = REDUNDANCY_THRESHOLD
+):
+    """Print full redundancy validation report."""
+    print("=" * 60)
+    print("CAPTION BANK REDUNDANCY VALIDATION")
+    print(f"Threshold: {threshold}")
+    print(f"Captions: {len(captions)}")
+    print("=" * 60)
+    print()
+
+    redundant = validate_redundancy(captions, embeddings, threshold)
+
+    if redundant:
+        print(f"FOUND {len(redundant)} REDUNDANT PAIR(S) (similarity > {threshold}):")
+        print()
+        for idx_a, idx_b, cap_a, cap_b, sim in sorted(redundant, key=lambda x: -x[4]):
+            print(f"  [{idx_a:2d}] \"{cap_a}\"")
+            print(f"  [{idx_b:2d}] \"{cap_b}\"")
+            print(f"  Similarity: {sim:.4f}")
+            print()
+    else:
+        print(f"NO redundant pairs found. All pairs below {threshold}.")
+        print()
+
+    # Summary statistics
+    n = len(captions)
+    sim_matrix = embeddings @ embeddings.T
+    # Extract upper triangle (excluding diagonal)
+    upper = sim_matrix[np.triu_indices(n, k=1)]
+    print("-" * 60)
+    print("PAIRWISE SIMILARITY STATISTICS")
+    print("-" * 60)
+    print(f"  Min:    {upper.min():.4f}")
+    print(f"  Max:    {upper.max():.4f}")
+    print(f"  Mean:   {upper.mean():.4f}")
+    print(f"  Median: {np.median(upper):.4f}")
+    print(f"  Std:    {upper.std():.4f}")
+    print()
+
+    # Top-10 most similar pairs
+    flat_indices = np.argsort(upper)[::-1][:10]
+    pairs = list(zip(*np.triu_indices(n, k=1)))
+    print("TOP-10 MOST SIMILAR PAIRS:")
+    for rank, fi in enumerate(flat_indices, 1):
+        i, j = pairs[fi]
+        print(f"  {rank:2d}. [{i:2d}] \"{captions[i][:40]}\"")
+        print(f"      [{j:2d}] \"{captions[j][:40]}\"")
+        print(f"      Similarity: {upper[fi]:.4f}")
+    print()
+
+    return len(redundant) == 0
 
 
 def main():
@@ -142,6 +220,10 @@ def main():
     parser.add_argument(
         "--device", type=str, default=None,
         help="Computation device (cuda/cpu, default: auto)"
+    )
+    parser.add_argument(
+        "--validate", action="store_true",
+        help="Run redundancy validation (flag pairs with similarity > 0.90)"
     )
 
     args = parser.parse_args()
@@ -194,6 +276,15 @@ def main():
     if embeddings.shape[1] != EMBEDDING_DIM:
         print("ERROR: Dimension mismatch!")
         return 1
+
+    # Run redundancy validation if requested
+    if args.validate:
+        print()
+        passed = print_validation_report(captions, embeddings)
+        if not passed:
+            print("WARNING: Redundant captions detected. Review before generating bank.")
+            print("Continuing with bank generation anyway.")
+        print()
 
     # Create caption bank
     caption_bank = create_caption_bank(captions, embeddings)
