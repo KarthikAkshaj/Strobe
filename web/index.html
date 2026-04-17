@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semantic Sentinel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ─── Load Screen ──────────────────────────────────────────────────────── -->
+<div id="load-screen">
+    <div class="load-card">
+        <h1 class="logo">Semantic <span class="accent">Sentinel</span></h1>
+        <p class="tagline">CLIP-powered semantic video captioning</p>
+
+        <div class="file-row">
+            <label class="drop-zone" id="video-zone">
+                <input type="file" id="video-file" accept="video/*" hidden>
+                <div class="dz-icon">&#9654;</div>
+                <div class="dz-label" id="video-label">Drop video file</div>
+                <div class="dz-sub">MP4, AVI, MOV, MKV&hellip;</div>
+            </label>
+
+            <div class="connector">&#10142;</div>
+
+            <label class="drop-zone" id="json-zone">
+                <input type="file" id="json-file" accept=".json" hidden>
+                <div class="dz-icon">{ }</div>
+                <div class="dz-label" id="json-label">Drop results JSON</div>
+                <div class="dz-sub">Output from sentinel_engine</div>
+            </label>
+        </div>
+
+        <button id="launch-btn" disabled>Open Viewer</button>
+
+        <div class="optional-row">
+            <label class="drop-zone drop-zone-sm" id="search-zone">
+                <input type="file" id="search-file" accept=".json" hidden>
+                <div class="dz-label" id="search-label">+ Search results (optional)</div>
+                <div class="dz-sub">Output from search_video.py</div>
+            </label>
+        </div>
+
+        <p class="hint">
+            Generate results with:<br>
+            <code>python enhance_captions.py video.mp4 --input raw.json --output enhanced.json</code>
+        </p>
+    </div>
+</div>
+
+<!-- ─── Viewer ───────────────────────────────────────────────────────────── -->
+<div id="viewer" hidden>
+
+    <!-- Left: video + timeline -->
+    <div id="video-panel">
+        <div id="video-wrap">
+            <video id="video-el" controls preload="metadata"></video>
+            <div id="caption-overlay" hidden>
+                <div id="overlay-text"></div>
+                <div id="overlay-meta">
+                    <span id="overlay-conf"></span>
+                    <span id="overlay-ts"></span>
+                </div>
+            </div>
+        </div>
+
+        <div id="timeline">
+            <canvas id="timeline-canvas"></canvas>
+            <div id="playhead"></div>
+        </div>
+    </div>
+
+    <!-- Right: sidebar -->
+    <div id="sidebar">
+
+        <div class="sb-section" id="meta-section">
+            <div class="sb-label">Engine</div>
+            <div id="meta-grid"></div>
+        </div>
+
+        <div class="sb-section" id="current-section">
+            <div class="sb-label">Current Caption</div>
+            <div id="cap-text" class="cap-text">&#8212;</div>
+            <div id="clip-original" class="clip-original" hidden></div>
+
+            <div class="metric-row">
+                <span class="metric-key">confidence</span>
+                <div class="bar-track"><div id="conf-bar" class="bar conf"></div></div>
+                <span id="conf-val" class="metric-num">&#8212;</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-key">gap</span>
+                <div class="bar-track"><div id="gap-bar" class="bar gap"></div></div>
+                <span id="gap-val" class="metric-num">&#8212;</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-key">change sim</span>
+                <div class="bar-track"><div id="sim-bar" class="bar sim"></div></div>
+                <span id="sim-val" class="metric-num">&#8212;</span>
+            </div>
+
+            <div id="alts-label" class="alts-label" hidden>Alternatives</div>
+            <div id="alts-list"></div>
+        </div>
+
+        <div class="sb-section" id="search-section" hidden>
+            <div class="sb-label">
+                Search Results
+                <span id="search-count" class="ev-count"></span>
+            </div>
+            <div id="search-query" class="search-query"></div>
+            <div id="search-list"></div>
+        </div>
+
+        <div class="sb-section" id="events-section">
+            <div class="sb-label">
+                Detection Events
+                <span id="ev-count" class="ev-count"></span>
+            </div>
+            <div id="events-list"></div>
+        </div>
+
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
